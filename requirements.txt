@@ -1,0 +1,48 @@
+# ============================================
+# DEPENDÊNCIAS DO BOT TRADER COM IA
+# ============================================
+
+# --- Trading & Exchange ---
+ccxt>=4.0.0                    # Biblioteca universal para exchanges
+python-binance>=1.0.19         # Cliente oficial Binance (mais rápido)
+websocket-client>=1.6.0        # Para streaming de dados em tempo real
+
+# --- Análise de Dados & Machine Learning ---
+pandas>=2.0.0                  # Manipulação e análise de dados
+numpy>=1.24.0                  # Operações numéricas e arrays
+scikit-learn>=1.3.0            # Algoritmos de ML (classificadores, regressão)
+# tensorflow>=2.13.0           # Deep Learning (descomente se usar modelos avançados)
+# torch>=2.0.0                 # PyTorch (alternativa ao TensorFlow)
+
+# --- Indicadores Técnicos ---
+# TA-Lib requer instalação separada em Windows
+# Para Windows: baixe wheel de https://www.lfd.uci.edu/~gohlke/pythonlibs/#ta-lib
+# ta-lib>=0.4.0                # Indicadores técnicos completos (requer instalação manual)
+
+# --- Análise de Sentimento & NLP ---
+nltk>=3.8                      # Natural Language Toolkit
+textblob>=0.17.0               # Análise de sentimento simples
+beautifulsoup4>=4.12.0         # Web scraping de notícias
+requests>=2.31.0               # HTTP requests para APIs
+lxml>=4.9.0                    # Parser para BeautifulSoup
+
+# --- Backtesting ---
+# backtrader>=1.9.78.123       # Framework completo de backtesting (opcional)
+# backtesting>=0.3.3           # Alternativa mais simples (opcional)
+
+# --- Notificações ---
+python-telegram-bot>=20.0      # Integração com Telegram
+# twilio>=8.0.0                # SMS (opcional)
+
+# --- Gerenciamento & Configuração ---
+python-dotenv>=1.0.0           # Gerenciar variáveis de ambiente (.env)
+loguru>=0.7.0                  # Sistema de logs avançado (opcional, usar ao invés de logging padrão)
+
+# --- Visualização (Opcional) ---
+# matplotlib>=3.7.0            # Gráficos básicos
+# plotly>=5.14.0               # Gráficos interativos
+# dash>=2.10.0                 # Dashboard web
+
+# --- Utilitários ---
+aiohttp>=3.8.0                 # HTTP assíncrono para APIs
+asyncio>=3.4.3                 # Programação assíncrona
