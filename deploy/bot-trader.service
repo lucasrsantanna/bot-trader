@@ -1,0 +1,38 @@
+[Unit]
+Description=Crypto Trading Bot - 24/7 Automated Trading
+After=network.target network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=bottrader
+Group=bottrader
+WorkingDirectory=/home/bottrader/bot-trader
+Environment="PATH=/home/bottrader/bot-trader/venv/bin:/usr/local/bin:/usr/bin:/bin"
+Environment="PYTHONUNBUFFERED=1"
+ExecStart=/home/bottrader/bot-trader/venv/bin/python src/main.py
+
+# Restart configuração
+Restart=always
+RestartSec=10
+StartLimitInterval=200
+StartLimitBurst=5
+
+# Logging
+StandardOutput=append:/home/bottrader/bot-trader/logs/bot.log
+StandardError=append:/home/bottrader/bot-trader/logs/bot-error.log
+SyslogIdentifier=bot-trader
+
+# Segurança
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=/home/bottrader/bot-trader
+
+# Limites de recursos
+LimitNOFILE=65536
+TasksMax=512
+
+[Install]
+WantedBy=multi-user.target
