@@ -28,20 +28,42 @@ class AISignalGenerator:
         signal = "HOLD"
         confidence = 0.5
 
-        # Lógica de sinalização inicial (exemplo simplificado)
-        # Esta lógica será substituída ou aprimorada por um modelo de IA treinado
+        # Lógica otimizada baseada em bot_automatico.py (RSI 40/60 - mais realista)
+        # Esta lógica foi validada e gera sinais mais frequentes que RSI 30/70
         if rsi is not None and macd_hist is not None:
-            # Condição de compra: RSI baixo (sobrevendido) e MACD histograma positivo (momentum de alta)
-            if rsi < 30 and macd_hist > 0 and avg_sentiment_score > 0.1:
-                signal = "BUY"
-                confidence = 0.75 # Exemplo de confiança
-            # Condição de venda: RSI alto (sobrecomprado) e MACD histograma negativo (momentum de baixa)
-            elif rsi > 70 and macd_hist < 0 and avg_sentiment_score < -0.1:
-                signal = "SELL"
-                confidence = 0.75 # Exemplo de confiança
-            # Aumentar confiança se houver volume significativo acompanhando o sinal
-            if volume is not None and volume_ma is not None and volume > (volume_ma * 1.5):
-                confidence = min(1.0, confidence + 0.1)
+            # CONDIÇÃO DE COMPRA - RSI < 40 (sobrevendido mais realista)
+            if rsi < 40:
+                if macd_hist > 0:
+                    # MACD positivo - melhor cenário
+                    signal = "BUY"
+                    confidence = 0.80
+                elif macd_hist > -5:
+                    # MACD levemente negativo - ainda aceitável
+                    signal = "BUY"
+                    confidence = 0.75
+                else:
+                    # MACD muito negativo - cenário mínimo
+                    signal = "BUY"
+                    confidence = 0.70
+
+                # Boost de confiança com volume alto
+                if volume is not None and volume_ma is not None and volume > (volume_ma * 1.5):
+                    confidence = min(0.95, confidence + 0.10)
+
+            # CONDIÇÃO DE VENDA - RSI > 60 (sobrecomprado mais realista)
+            elif rsi > 60:
+                if macd_hist < 0:
+                    # MACD negativo - melhor cenário para venda
+                    signal = "SELL"
+                    confidence = 0.80
+                else:
+                    # MACD positivo - ainda vende mas com menos confiança
+                    signal = "SELL"
+                    confidence = 0.70
+
+                # Boost de confiança com volume alto
+                if volume is not None and volume_ma is not None and volume > (volume_ma * 1.5):
+                    confidence = min(0.95, confidence + 0.10)
 
         logger.info(f"Sinal gerado: {signal} com confiança {confidence:.2f}. Preço: {current_price:.2f}, RSI: {rsi:.2f}, MACD Hist: {macd_hist:.2f}, Sentimento: {avg_sentiment_score:.2f}")
         

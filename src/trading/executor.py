@@ -4,14 +4,34 @@ from utils.logger import logger
 
 class OrderExecutor:
     def __init__(self):
-        self.exchange = ccxt.binance({
-            'apiKey': settings.BINANCE_API_KEY,
-            'secret': settings.BINANCE_SECRET_KEY,
-            'options': {
-                'defaultType': 'future', # Ou 'spot' dependendo do seu interesse
-            },
-            'enableRateLimit': True,
-        })
+        # Configurar Testnet se USE_TESTNET=true
+        import os
+        use_testnet = os.getenv('USE_TESTNET', 'false').lower() == 'true'
+
+        if use_testnet:
+            # Para Testnet, usar modo sandbox
+            self.exchange = ccxt.binance({
+                'apiKey': settings.BINANCE_API_KEY,
+                'secret': settings.BINANCE_SECRET_KEY,
+                'enableRateLimit': True,
+                'options': {
+                    'defaultType': 'spot',
+                },
+            })
+            # Setar URLs manualmente após criação (ccxt ignora no config)
+            self.exchange.urls['api'] = 'https://testnet.binance.vision'
+            self.exchange.hostname = 'testnet.binance.vision'
+        else:
+            # Produção - Futures
+            self.exchange = ccxt.binance({
+                'apiKey': settings.BINANCE_API_KEY,
+                'secret': settings.BINANCE_SECRET_KEY,
+                'enableRateLimit': True,
+                'options': {
+                    'defaultType': 'future',
+                }
+            })
+
         logger.info("OrderExecutor inicializado.")
 
     async def create_market_order(self, symbol: str, side: str, amount: float):

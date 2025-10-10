@@ -40,6 +40,12 @@ env/
 bot_dados.json
 bot.pid
 
+# Database files
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3
+
 # Logs
 *.log
 logs/

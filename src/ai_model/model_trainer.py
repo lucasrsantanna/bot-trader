@@ -17,7 +17,7 @@ class AIModelTrainer:
         Os dados devem incluir features (indicadores técnicos, sentimento) e o alvo (sinal de compra/venda).
         """
         try:
-            df = pd.read_csv(file_path, index_col=\"timestamp\")
+            df = pd.read_csv(file_path, index_col="timestamp")
             df.index = pd.to_datetime(df.index)
             logger.info(f"Dados carregados com sucesso de {file_path}")
             return df
