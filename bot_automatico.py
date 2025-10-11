@@ -332,6 +332,45 @@ class BotAutomatico:
         if analise['sinal'] == "BUY" and analise['confianca'] >= self.dados['config']['ai_confidence']:
             self.executar_compra(analise)
 
+    def ler_controles(self):
+        """Lê controles do dashboard"""
+        try:
+            if os.path.exists("bot_controle.json"):
+                with open("bot_controle.json", 'r') as f:
+                    controles = json.load(f)
+
+                    # Verificar se foi pausado
+                    if controles.get("pausado"):
+                        return "PAUSADO"
+
+                    # Verificar entrada forçada
+                    if controles.get("forcar_entrada"):
+                        sinal = controles["forcar_entrada"]
+                        controles["forcar_entrada"] = None
+                        with open("bot_controle.json", 'w') as f:
+                            json.dump(controles, f, indent=2)
+                        return f"FORCAR_{sinal}"
+
+                    # Verificar saída forçada
+                    if controles.get("forcar_saida"):
+                        controles["forcar_saida"] = False
+                        with open("bot_controle.json", 'w') as f:
+                            json.dump(controles, f, indent=2)
+                        return "FORCAR_SAIDA"
+
+                    # Verificar novos parâmetros
+                    if controles.get("novos_parametros"):
+                        self.dados['config'].update(controles["novos_parametros"])
+                        controles["novos_parametros"] = None
+                        with open("bot_controle.json", 'w') as f:
+                            json.dump(controles, f, indent=2)
+                        self.log("[DASHBOARD] Parametros atualizados!")
+
+                    return "OK"
+        except:
+            pass
+        return "OK"
+
     def executar_loop(self):
         """Loop principal"""
         intervalo = self.dados['config']['intervalo']
@@ -342,8 +381,41 @@ class BotAutomatico:
 
         try:
             while True:
+                # Ler controles do dashboard
+                status_controle = self.ler_controles()
+
+                if status_controle == "PAUSADO":
+                    self.log("[DASHBOARD] Bot pausado pelo dashboard")
+                    time.sleep(5)
+                    continue
+
+                if status_controle == "FORCAR_SAIDA" and self.dados['posicao']:
+                    self.log("[DASHBOARD] Fechamento manual solicitado")
+                    df = self.coletar_dados()
+                    if df is not None:
+                        preco_atual = df['close'].iloc[-1]
+                        self.fechar_posicao(preco_atual, "ORDEM MANUAL")
+
+                if status_controle and status_controle.startswith("FORCAR_"):
+                    tipo = status_controle.split("_")[1]
+                    self.log(f"[DASHBOARD] Entrada manual: {tipo}")
+                    df = self.coletar_dados()
+                    if df is not None and not self.dados['posicao']:
+                        df = self.calcular_indicadores(df)
+                        analise = self.gerar_sinal(df)
+                        analise['sinal'] = tipo
+                        analise['confianca'] = 1.0
+                        if tipo == "BUY":
+                            self.executar_compra(analise)
+                        elif tipo == "SELL":
+                            self.log("[INFO] SELL em SPOT = vender posicao aberta")
+
+                # Executar ciclo normal
                 self.executar_ciclo()
                 self.salvar_dados()
+
+                # Atualizar intervalo se foi mudado
+                intervalo = self.dados['config']['intervalo']
                 time.sleep(intervalo)
 
         except KeyboardInterrupt:
