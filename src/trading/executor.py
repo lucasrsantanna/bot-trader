@@ -1,15 +1,13 @@
 import ccxt
+import os
 from config.settings import settings
 from utils.logger import logger
 
 class OrderExecutor:
     def __init__(self):
-        # Configurar Testnet se USE_TESTNET=true
-        import os
         use_testnet = os.getenv('USE_TESTNET', 'false').lower() == 'true'
 
         if use_testnet:
-            # Para Testnet, usar modo sandbox
             self.exchange = ccxt.binance({
                 'apiKey': settings.BINANCE_API_KEY,
                 'secret': settings.BINANCE_SECRET_KEY,
@@ -18,11 +16,9 @@ class OrderExecutor:
                     'defaultType': 'spot',
                 },
             })
-            # Setar URLs manualmente após criação (ccxt ignora no config)
-            self.exchange.urls['api'] = 'https://testnet.binance.vision'
-            self.exchange.hostname = 'testnet.binance.vision'
+            self.exchange.set_sandbox_mode(True)
+            logger.info("Usando Binance Testnet SPOT para execução de ordens.")
         else:
-            # Produção - Futures
             self.exchange = ccxt.binance({
                 'apiKey': settings.BINANCE_API_KEY,
                 'secret': settings.BINANCE_SECRET_KEY,
@@ -31,6 +27,7 @@ class OrderExecutor:
                     'defaultType': 'future',
                 }
             })
+            logger.info("Usando Binance Produção (Futures) para execução de ordens.")
 
         logger.info("OrderExecutor inicializado.")
 

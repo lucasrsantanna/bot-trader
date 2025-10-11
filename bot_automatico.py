@@ -22,12 +22,35 @@ class BotAutomatico:
         self.dados = self.carregar_dados()
 
         # Exchange
-        self.exchange = ccxt.binance({
-            'apiKey': os.getenv("BINANCE_API_KEY"),
-            'secret': os.getenv("BINANCE_SECRET_KEY"),
-            'enableRateLimit': True,
-        })
-        self.exchange.set_sandbox_mode(True)
+        # Configuração da Exchange
+        use_testnet = os.getenv('USE_TESTNET', 'false').lower() == 'true'
+
+        if use_testnet:
+            self.exchange = ccxt.binance({
+                'apiKey': os.getenv("BINANCE_API_KEY"),
+                'secret': os.getenv("BINANCE_SECRET_KEY"),
+                'enableRateLimit': True,
+                'options': {
+                    'defaultType': 'spot',
+                },
+            })
+            self.exchange.set_sandbox_mode(True)
+            print("[INFO] Usando Binance Testnet SPOT")
+        else:
+            self.exchange = ccxt.binance({
+                'apiKey': os.getenv("BINANCE_API_KEY"),
+                'secret': os.getenv("BINANCE_SECRET_KEY"),
+                'enableRateLimit': True,
+                'options': {
+                    'defaultType': 'future',
+                }
+            })
+            print("[INFO] Usando Binance Produção (Futures)")
+        # set_sandbox_mode(True) é redundante ou pode causar conflito com a configuração manual da URL
+        # Se você estiver usando a testnet de futuros, a URL precisa ser explícita.
+        # Se for spot testnet, a URL é 'https://testnet.binance.vision/api/v3'
+        # Certifique-se de que 'defaultType' e 'urls' estão corretos para o ambiente que você quer testar.
+
 
         # Analyzer
         self.sentiment_analyzer = SentimentIntensityAnalyzer()

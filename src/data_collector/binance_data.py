@@ -43,14 +43,10 @@ class BinanceDataCollector:
                 'enableRateLimit': True,
                 'options': {
                     'defaultType': 'spot',
-                    'fetchCurrencies': False,  # Testnet não tem endpoint sapi
                 },
             })
-            # Setar URLs manualmente após criação
-            self.exchange.urls['api'] = 'https://testnet.binance.vision'
-            self.exchange.hostname = 'testnet.binance.vision'
-            # Desabilitar load_markets automático (usa endpoints que testnet não tem)
-            self.exchange.options['loadMarkets'] = False
+            # Ativar modo sandbox (Testnet)
+            self.exchange.set_sandbox_mode(True)
         else:
             # Produção - Futures
             self.exchange = ccxt.binance({
