@@ -98,17 +98,25 @@ python -c "import nltk; nltk.download('vader_lexicon')"
 
 ### 6. Configure as Variáveis de Ambiente
 
-```bash
-# Copie o arquivo de exemplo
-cp .env.example .env
+**✨ NOVIDADE: Credenciais Testnet Pré-configuradas!**
 
-# Edite o arquivo .env com suas credenciais
-# Use um editor de texto para preencher:
-# - BINANCE_API_KEY
-# - BINANCE_SECRET_KEY
-# - TELEGRAM_BOT_TOKEN (opcional)
-# - TELEGRAM_CHAT_ID (opcional)
+Este projeto já inclui credenciais da **Binance Testnet** configuradas para você começar imediatamente:
+
+```bash
+# OPÇÃO 1: Usar credenciais compartilhadas (Recomendado para iniciantes)
+# O arquivo .env.testnet já está configurado - NADA A FAZER!
+# Apenas execute: python src/main.py
+
+# OPÇÃO 2: Usar suas próprias credenciais
+cp .env.example .env
+# Edite o .env com suas próprias API keys
 ```
+
+**📖 Documentação completa:** Veja [TESTNET_CREDENTIALS.md](TESTNET_CREDENTIALS.md) para detalhes.
+
+**🔒 Segurança:**
+- `.env.testnet` → Testnet (seguro compartilhar, sem dinheiro real)
+- `.env` → Suas credenciais privadas (nunca vai pro Git)
 
 ---
 
